@@ -20,12 +20,13 @@ class Stack():
 		self.stack.insert(0, value)
 
 
-MAX_DEPTH = 3
+MAX_DEPTH = 4
 
 class State():
 	def __init__(self):
 		value = None
 		move = None
+		score = 0
 		matrix = None
 		depth = 0
 		remove_list = []
@@ -38,7 +39,7 @@ def terminalTest(state):
 		s.update(set(row))
 
 	s = list(s)
-	if len(s) == 1:
+	if len(s) == 1 and s[0] == '*':
 		return True, 0
 	if state.depth == MAX_DEPTH:
 		return True, len(s)
@@ -73,8 +74,7 @@ def gravity(matrix):
 
 	return matrix
 
-
-def runDfs(matrix, i, j, new_depth):
+def runDfs(matrix, i, j, new_depth, total_score, flag):
 
 	stack = Stack()
 	stack.add((i, j))
@@ -117,15 +117,15 @@ def runDfs(matrix, i, j, new_depth):
 
 	state = State()
 	state.move = (i, j)
+	state.score = total_score + flag * (score ** 2)
 	state.value = score ** 2
 	state.matrix = gravity(matrix)
 	state.depth = new_depth
 	state.remove_list = remove_list
-
 	return state
 
 
-def actions(state):
+def actions(state, flag):
 
 	actions_list = []
 	matrix = state.matrix
@@ -134,7 +134,7 @@ def actions(state):
 		for j in range(N):
 			if matrix[i][j] != '*' and ((i, j) not in done_list):
 				new_matrix = getNewMatrix(matrix)
-				new_state = runDfs(new_matrix, i, j, state.depth + 1)
+				new_state = runDfs(new_matrix, i, j, state.depth + 1, state.score, flag)
 				actions_list.append(new_state)
 				done_list = done_list + new_state.remove_list
 
@@ -143,10 +143,11 @@ def actions(state):
 
 def utility(state, num_remaining):
 	value = state.value
+	score = state.score
 	num_remaining = num_remaining ** 2
 
 	if num_remaining == 0:
-		state.value = float(value)
+		state.value = float(score)
 	else:
 		state.value = float(value)/num_remaining
 
@@ -163,26 +164,21 @@ def maxValue(state, alpha, beta):
 		return utility(state, num)
 
 	v = -99999999
-	move = None
-	temp_mat = None
-	for a_state in actions(state):
+	return_state = State()
+	for a_state in actions(state, 1):
 		minValueState = minValue(a_state, alpha, beta)
 		
 		if v < minValueState.value:
 			v = minValueState.value
-			move = minValueState.move
-			temp_mat = minValueState.matrix
+			return_state.move = minValueState.move
+			return_state.matrix = minValueState.matrix
+			return_state.value = minValueState.value
 
 		if v >= beta:
-			state.value = v
-			state.move = move
-			state.matrix = temp_mat
-			return state
+			return_state.value = v
+			return return_state
 		alpha = max(alpha, v)
-	state.value = v
-	state.move = move
-	state.matrix = temp_mat
-	return state
+	return return_state
 
 def minValue(state, alpha, beta):
 
@@ -191,26 +187,21 @@ def minValue(state, alpha, beta):
 		return utility(state, num)
 
 	v = 99999999
-	move = None
-	temp_mat = None
-	for a_state in actions(state):
+	return_state = State()
+	for a_state in actions(state, -1):
 		maxValueState = maxValue(a_state, alpha, beta)
 
 		if v > maxValueState.value:
 			v = maxValueState.value
-			move = maxValueState.move
-			temp_mat = maxValueState.matrix
+			return_state.move = maxValueState.move
+			return_state.matrix = maxValueState.matrix
+			return_state.value = maxValueState.value
 
 		if v <= alpha:
-			state.value = v
-			state.move = move
-			state.matrix = temp_mat
-			return state
+			return_state.value = v
+			return return_state
 		beta = min(beta, v)
-	state.value = v
-	state.move = move
-	state.matrix = temp_mat
-	return state
+	return return_state
 
 
 if __name__ == "__main__":
@@ -232,15 +223,20 @@ if __name__ == "__main__":
 				tmp.append(m[i][j])
 			matrix.append(tmp)
 
+		print numpy.array(matrix)
+
+		init_matrix = copy.deepcopy(matrix)
 		state = State()
 		state.value = 0
+		state.score = 0
 		state.matrix = matrix
 		state.depth = 0
 		state.move = None
 
 		absearch = alphaBetaSearch(state)
 		print absearch.move
-		print absearch.matrix
+		absearch.matrix = runDfs(init_matrix, absearch.move[0], absearch.move[1], 0, 0, 0).matrix
+		print numpy.array(absearch.matrix)
 		print absearch.value
 
 		# fp = open("output.txt", "w")
