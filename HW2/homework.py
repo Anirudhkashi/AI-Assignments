@@ -1,5 +1,6 @@
 import copy
 import numpy
+import time
 
 class Stack():
 	def __init__(self):
@@ -20,16 +21,16 @@ class Stack():
 		self.stack.insert(0, value)
 
 
-MAX_DEPTH = 4
+MAX_DEPTH = 5
 
 class State():
 	def __init__(self):
-		value = None
-		move = None
-		score = 0
-		matrix = None
-		depth = 0
-		remove_list = []
+		self.value = None
+		self.move = None
+		self.score = 0
+		self.matrix = None
+		self.depth = 0
+		self.remove_list = []
 
 def terminalTest(state):
 
@@ -117,8 +118,8 @@ def runDfs(matrix, i, j, new_depth, total_score, flag):
 
 	state = State()
 	state.move = (i, j)
-	state.score = total_score + flag * (score ** 2)
 	state.value = score ** 2
+	state.score = total_score + flag * (score ** 2)
 	state.matrix = gravity(matrix)
 	state.depth = new_depth
 	state.remove_list = remove_list
@@ -138,6 +139,7 @@ def actions(state, flag):
 				actions_list.append(new_state)
 				done_list = done_list + new_state.remove_list
 
+	actions_list = sorted(actions_list, key = lambda x: x.value, reverse=True)
 	return actions_list
 
 
@@ -149,59 +151,62 @@ def utility(state, num_remaining):
 	if num_remaining == 0:
 		state.value = float(score)
 	else:
-		state.value = float(value)/num_remaining
+		state.value = float(score)/num_remaining
 
 	return state
 
 def alphaBetaSearch(state):
-	v = maxValue(state, -99999999, 999999999)
-	return v
+	state, move = maxValue(state, -99999999, 999999999)
+	state.move = move
+	return state
 
 def maxValue(state, alpha, beta):
 
 	b, num = terminalTest(state)
 	if b:
-		return utility(state, num)
+		s = utility(state, num)
+		return s, s.move
 
 	v = -99999999
-	return_state = State()
+	move = None
 	for a_state in actions(state, 1):
-		minValueState = minValue(a_state, alpha, beta)
+		minValueState, ignore = minValue(a_state, alpha, beta)
 		
 		if v < minValueState.value:
 			v = minValueState.value
-			return_state.move = minValueState.move
-			return_state.matrix = minValueState.matrix
-			return_state.value = minValueState.value
+			move = minValueState.move
+			state.matrix = minValueState.matrix
+			state.value = minValueState.value
+			state.score = minValueState.score
 
 		if v >= beta:
-			return_state.value = v
-			return return_state
+			return state, move
 		alpha = max(alpha, v)
-	return return_state
+	return state, move
 
 def minValue(state, alpha, beta):
 
 	b, num = terminalTest(state)
 	if b:
-		return utility(state, num)
+		s = utility(state, num)
+		return s, s.move
 
 	v = 99999999
-	return_state = State()
+	move = None
 	for a_state in actions(state, -1):
-		maxValueState = maxValue(a_state, alpha, beta)
+		maxValueState, ignore = maxValue(a_state, alpha, beta)
 
 		if v > maxValueState.value:
 			v = maxValueState.value
-			return_state.move = maxValueState.move
-			return_state.matrix = maxValueState.matrix
-			return_state.value = maxValueState.value
+			move = maxValueState.move
+			state.matrix = maxValueState.matrix
+			state.value = maxValueState.value
+			state.score = maxValueState.score
 
 		if v <= alpha:
-			return_state.value = v
-			return return_state
+			return state, move
 		beta = min(beta, v)
-	return return_state
+	return state, move
 
 
 if __name__ == "__main__":
