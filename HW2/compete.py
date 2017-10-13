@@ -107,7 +107,7 @@ def getAvailableMoves(node,player):
 				res = getMaxFruit(game_board, i, j)
 				new_node = Node()
 				time1 = time.time()
-				new_node.game_board = gravity(res[0])
+				new_node.game_board = applyGravity(res[0])
 				time2 = time.time()
 				# print time2-time1
 				new_node.value = res[1]
@@ -119,14 +119,8 @@ def getAvailableMoves(node,player):
 				moves.append(new_node)
 	return moves
 
-total_nodes = 0
 
 def minPlay(node,alpha,beta, t1):
-	global total_nodes
-	if time.time() > t1:
-		print total_nodes
-		exit()
-	total_nodes += 1
 	isLeaf,state = isEmpty(node)
 	if isLeaf:
 		return state, state.move
@@ -147,11 +141,6 @@ def minPlay(node,alpha,beta, t1):
 	return node,move
 
 def maxPlay(node,alpha,beta, t1):
-	global total_nodes
-	if time.time() > t1:
-		print total_nodes
-		exit()
-	total_nodes += 1
 	isLeaf,state = isEmpty(node)
 	if isLeaf:
 		return state, state.move
@@ -180,7 +169,7 @@ def minimaxDecision(node):
 	res,move = maxPlay(node,float('-inf'),float('inf'), t1)
 	print move
 	res.move = move
-	res_matrix = gravity(getMaxFruit(game_board,res.move[0],res.move[1])[0])
+	res_matrix = applyGravity(getMaxFruit(game_board,res.move[0],res.move[1])[0])
 	for row in res_matrix:
 		print row 
 	output(res_matrix)
@@ -189,7 +178,7 @@ def minimaxDecision(node):
 size = 0
 def preProcess():
 	game_board = []
-	f = open("input_comp.txt").read().split("\n")
+	f = open("input_comp.txt").read().strip().split("\n")
 	size = int(f[0])
 	fruits = int(f[1])
 	total_time = float(f[2])
@@ -198,7 +187,7 @@ def preProcess():
 	return fruits,size,game_board,total_time
 
 def output(game_board):
-	f = open("input_comp.txt").read().split("\n")
+	f = open("input_comp.txt").read().strip().split("\n")
 	size = int(f[0])
 	fruits = int(f[1])
 	total_time = float(f[2])
@@ -217,7 +206,7 @@ def main():
 	node.move = None
 	node.depth = 0
 	matrix, score = minimaxDecision(node)
-	return matrix[:size], score
+	return score,matrix[:size]
 
 
 if __name__ == "__main__":

@@ -17,21 +17,27 @@ def checkMove(matrix):
 		movePossible = 1
 
 
-while movePossible == 0:
-	print "Calling your code......."
+while True:
+	print "Calling Anish's code......"
+	score, matrix = compete.main()
+	opponenet_score += score
+	print "Opponent's total score: " + str(opponenet_score)
+	checkMove(matrix)
+	print "Done\n"
+	
+
+	if movePossible == 1:
+		break
+
+	print "Calling Anirudh code......."
 	score, matrix = homework.main()
 	your_score += score
 	print "Your total score: " + str(your_score)
 	checkMove(matrix)
 	print "Done\n"
 
-	print "Calling opponent's code......"
-	score, matrix = compete.main()
-	opponenet_score += score
-	print "Opponent's total score: " + str(opponenet_score)
-	checkMove(matrix)
-	print "Done\n"
-
+	if movePossible == 1:
+		break
 
 if your_score > opponenet_score:
 	print "YOU WIN!!"
