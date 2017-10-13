@@ -211,7 +211,9 @@ def minValue(state, alpha, beta):
 def main():
 
 	global N
+
 	with open("input.txt", "r") as f:
+
 		inp = f.read().strip().split("\n")
 		N = int(inp[0]) # N x N matrix
 		P = int(inp[1]) # Number of kinds of fruits
