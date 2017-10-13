@@ -21,7 +21,7 @@ class Stack():
 		self.stack.insert(0, value)
 
 
-MAX_DEPTH = 4
+MAX_DEPTH = 100
 
 class State():
 	def __init__(self):
@@ -208,9 +208,9 @@ def minValue(state, alpha, beta):
 		beta = min(beta, v)
 	return state, move
 
-def main():
 
-	global N
+if __name__ == "__main__":
+
 	with open("input.txt", "r") as f:
 		inp = f.read().strip().split("\n")
 		N = int(inp[0]) # N x N matrix
@@ -239,25 +239,15 @@ def main():
 		state.move = None
 
 		absearch = alphaBetaSearch(state)
-		temp = runDfs(init_matrix, absearch.move[0], absearch.move[1], 0, 0, 0)
-		absearch.matrix = temp.matrix
-		absearch.score = temp.value
+		print absearch.move
+		absearch.matrix = runDfs(init_matrix, absearch.move[0], absearch.move[1], 0, 0, 0).matrix
+		print numpy.array(absearch.matrix)
 
 		fp = open("input_comp.txt", "w")
 		fp.write(str(N) + "\n")
 		fp.write(str(P) + "\n")
 		fp.write(str(TIME) + "\n")
-		print "HW1: ", absearch.move
+		print "HW1: ", move
 
-		matrix = absearch.matrix
-		for i in range(N):
+		for i in N:
 			fp.write("".join(matrix[i]) + "\n")
-
-		fp.close()
-
-		return absearch.score, absearch.matrix
-
-
-if __name__ == "__main__":
-
-	print main()

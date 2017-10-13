@@ -151,7 +151,7 @@ def utility(state, num_remaining):
 	if num_remaining == 0:
 		state.value = float(score)
 	else:
-		state.value = float(score)/num_remaining
+		state.value = float(score)
 
 	return state
 
@@ -211,7 +211,7 @@ def minValue(state, alpha, beta):
 def main():
 
 	global N
-	with open("input.txt", "r") as f:
+	with open("input_comp.txt", "r") as f:
 		inp = f.read().strip().split("\n")
 		N = int(inp[0]) # N x N matrix
 		P = int(inp[1]) # Number of kinds of fruits
@@ -243,7 +243,7 @@ def main():
 		absearch.matrix = temp.matrix
 		absearch.score = temp.value
 
-		fp = open("input_comp.txt", "w")
+		fp = open("input.txt", "w")
 		fp.write(str(N) + "\n")
 		fp.write(str(P) + "\n")
 		fp.write(str(TIME) + "\n")
