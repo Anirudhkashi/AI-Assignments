@@ -31,6 +31,7 @@ class State():
 		self.matrix = None
 		self.depth = 0
 		self.remove_list = []
+		self.parent_list = []
 
 def terminalTest(state):
 
@@ -75,7 +76,7 @@ def gravity(matrix):
 
 	return matrix
 
-def runDfs(matrix, i, j, new_depth, total_score, flag):
+def runDfs(matrix, i, j, new_depth, total_score, flag, parent_list):
 
 	stack = Stack()
 	stack.add((i, j))
@@ -123,6 +124,7 @@ def runDfs(matrix, i, j, new_depth, total_score, flag):
 	state.matrix = gravity(matrix)
 	state.depth = new_depth
 	state.remove_list = remove_list
+	state.parent_list += parent_list + [(i, j)]
 	return state
 
 
@@ -135,7 +137,7 @@ def actions(state, flag):
 		for j in range(N):
 			if matrix[i][j] != '*' and ((i, j) not in done_list):
 				new_matrix = getNewMatrix(matrix)
-				new_state = runDfs(new_matrix, i, j, state.depth + 1, state.score, flag)
+				new_state = runDfs(new_matrix, i, j, state.depth + 1, state.score, flag, state.parent_list)
 				actions_list.append(new_state)
 				done_list = done_list + new_state.remove_list
 
@@ -151,7 +153,7 @@ def utility(state, num_remaining):
 	if num_remaining == 0:
 		state.value = float(score)
 	else:
-		state.value = float(score)/num_remaining
+		state.value = float(score)
 
 	return state
 
@@ -180,9 +182,31 @@ def maxValue(state, alpha, beta):
 			state.score = minValueState.score
 
 		if v >= beta:
+			print "Pruning..."
+			print_value(state, move, 1)
 			return state, move
 		alpha = max(alpha, v)
+	print_value(state, move, 1)
 	return state, move
+
+
+def print_value(state, move, flag):
+
+	if flag == 1:
+		print "In max:.........................."
+		print state.value
+		print state.score
+		print state.parent_list
+		print move
+		print "----------------------------\n\n"
+
+	else:
+		print "In min:..........................."
+		print state.value
+		print state.score
+		print state.parent_list
+		print move
+		print "------------------------------\n\n"
 
 def minValue(state, alpha, beta):
 
@@ -204,8 +228,11 @@ def minValue(state, alpha, beta):
 			state.score = maxValueState.score
 
 		if v <= alpha:
+			print "Pruning...."
+			print_value(state, move, 0)
 			return state, move
 		beta = min(beta, v)
+	print_value(state, move, 0)
 	return state, move
 
 def main():
@@ -241,7 +268,7 @@ def main():
 		state.move = None
 
 		absearch = alphaBetaSearch(state)
-		temp = runDfs(init_matrix, absearch.move[0], absearch.move[1], 0, 0, 0)
+		temp = runDfs(init_matrix, absearch.move[0], absearch.move[1], 0, 0, 0, [])
 		absearch.matrix = temp.matrix
 		absearch.score = temp.value
 
