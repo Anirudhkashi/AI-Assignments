@@ -206,7 +206,7 @@ def main():
 	node.move = None
 	node.depth = 0
 	matrix, score = minimaxDecision(node)
-	return score,matrix[:size]
+	return score, matrix[:size]
 
 
 if __name__ == "__main__":

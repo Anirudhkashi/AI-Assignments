@@ -21,7 +21,7 @@ class Stack():
 		self.stack.insert(0, value)
 
 
-MAX_DEPTH = 4
+MAX_DEPTH = 5
 
 class State():
 	def __init__(self):
