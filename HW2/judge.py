@@ -19,8 +19,8 @@ def checkMove(matrix):
 
 
 
-MIN_SIZE = 6
-MAX_SIZE = 26
+MIN_SIZE = 5
+MAX_SIZE = 5
 N = random.randint(MIN_SIZE, MAX_SIZE)
 
 MIN_FRUIT_TYPE = 0
@@ -40,45 +40,45 @@ with open("input.txt", "w") as f:
 	f.write(s)
 
 
-while True:
-	print "Calling Player2 code......"
-	score, matrix = compete.main()
-	player2_score += score
-	print "player2's total score: " + str(player2_score)
-	checkMove(matrix)
-	print "Done\n"
+# while True:
+# 	print "Calling Player2 code......"
+# 	score, matrix = compete.main()
+# 	player2_score += score
+# 	print "player2's total score: " + str(player2_score)
+# 	checkMove(matrix)
+# 	print "Done\n"
 	
 
-	if movePossible == 1:
-		break
+# 	if movePossible == 1:
+# 		break
 
-	print "Calling Player1 code......."
-	score, matrix = homework.main()
-	player1_score += score
-	print "player1 total score: " + str(player1_score)
-	checkMove(matrix)
-	print "Done\n"
+# 	print "Calling Player1 code......."
+# 	score, matrix = homework.main()
+# 	player1_score += score
+# 	print "player1 total score: " + str(player1_score)
+# 	checkMove(matrix)
+# 	print "Done\n"
 
-	if movePossible == 1:
-		break
+# 	if movePossible == 1:
+# 		break
 
-if player1_score > player2_score:
-	print "Player1 WINS!!"
-	print "player1 total score: " + str(player1_score)
-	print "player2's total score: " + str(player2_score)
+# if player1_score > player2_score:
+# 	print "Player1 WINS!!"
+# 	print "player1 total score: " + str(player1_score)
+# 	print "player2's total score: " + str(player2_score)
 
-elif player2_score > player1_score:
-	print "Player2 WINS!!"
-	print "player1 total score: " + str(player1_score)
-	print "player2 total score: " + str(player2_score)
+# elif player2_score > player1_score:
+# 	print "Player2 WINS!!"
+# 	print "player1 total score: " + str(player1_score)
+# 	print "player2 total score: " + str(player2_score)
 
-else:
-	print "DRAW!"
-	print "player1 total score: " + str(player1_score)
-	print "player2 total score: " + str(player2_score)
+# else:
+# 	print "DRAW!"
+# 	print "player1 total score: " + str(player1_score)
+# 	print "player2 total score: " + str(player2_score)
 
-fp = open("input_temp.txt", "r")
-fp2 = open("input.txt", "w")
-fp2.write(fp.read())
-fp.close()
-fp2.close()
+# fp = open("input_temp.txt", "r")
+# fp2 = open("input.txt", "w")
+# fp2.write(fp.read())
+# fp.close()
+# fp2.close()

@@ -21,7 +21,8 @@ class Stack():
 		self.stack.insert(0, value)
 
 
-MAX_DEPTH = 4
+MAX_DEPTH = 3
+count = 0
 
 class State():
 	def __init__(self):
@@ -128,6 +129,7 @@ def runDfs(matrix, i, j, new_depth, total_score, flag):
 
 def actions(state, flag):
 
+	global count
 	actions_list = []
 	matrix = state.matrix
 	done_list = []
@@ -140,6 +142,7 @@ def actions(state, flag):
 				done_list = done_list + new_state.remove_list
 
 	actions_list = sorted(actions_list, key = lambda x: x.value, reverse=True)
+	count += len(actions_list)
 	return actions_list
 
 
@@ -257,6 +260,7 @@ def main():
 
 		fp.close()
 
+		print count
 		return absearch.score, absearch.matrix
 
 
