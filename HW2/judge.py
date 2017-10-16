@@ -19,8 +19,8 @@ def checkMove(matrix):
 
 
 
-MIN_SIZE = 5
-MAX_SIZE = 5
+MIN_SIZE = 26
+MAX_SIZE = 26
 N = random.randint(MIN_SIZE, MAX_SIZE)
 
 MIN_FRUIT_TYPE = 0

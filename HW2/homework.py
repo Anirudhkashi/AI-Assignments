@@ -22,7 +22,9 @@ class Stack():
 
 
 MAX_DEPTH = 3
-count = 0
+MOVES = None
+IS_MOVES_SET = False
+TIME_PER_MOVE = None
 
 class State():
 	def __init__(self):
@@ -45,6 +47,8 @@ def terminalTest(state):
 		return True, 0
 	if state.depth == MAX_DEPTH:
 		return True, len(s)
+	# if IS_MOVES_SET and time.time() - start_time > TIME_PER_MOVE:
+	# 	return True, 0
 	return False, 0
 
 
@@ -130,6 +134,10 @@ def runDfs(matrix, i, j, new_depth, total_score, flag):
 def actions(state, flag):
 
 	global count
+	global MOVES
+	global IS_MOVES_SET
+	global TIME_PER_MOVE
+
 	actions_list = []
 	matrix = state.matrix
 	done_list = []
@@ -142,7 +150,13 @@ def actions(state, flag):
 				done_list = done_list + new_state.remove_list
 
 	actions_list = sorted(actions_list, key = lambda x: x.value, reverse=True)
-	count += len(actions_list)
+
+	if not IS_MOVES_SET:
+		MOVES = len(actions_list)
+		IS_MOVES_SET = True
+		TIME_PER_MOVE = (2.0 * float(TIME)) / float(MOVES)
+		print TIME_PER_MOVE
+
 	return actions_list
 
 
@@ -214,6 +228,10 @@ def minValue(state, alpha, beta):
 def main():
 
 	global N
+	global start_time
+	global TIME
+
+	start_time = time.time()
 
 	with open("input.txt", "r") as f:
 
@@ -260,7 +278,6 @@ def main():
 
 		fp.close()
 
-		print count
 		return absearch.score, absearch.matrix
 
 
