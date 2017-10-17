@@ -153,14 +153,12 @@ def actions(state, flag):
 
 	if not IS_MOVES_SET:
 		MOVES = len(actions_list)
+		print MOVES
 		IS_MOVES_SET = True
-
-		if MOVES > 4:
-			TIME_PER_MOVE = (2.0 * float(TIME) * 0.8) / float(MOVES)
-		else:
-			TIME_PER_MOVE = (2.0 * float(TIME) * 0.9) / float(MOVES)
-		print TIME_PER_MOVE
+		TIME_PER_MOVE = (2.0 * float(TIME)) / float(MOVES)
 		set_max_depth(init=0)
+		print MAX_DEPTH
+
 	return actions_list
 
 
@@ -292,14 +290,20 @@ def main():
 		absearch.score = temp.value
 
 		fp = open("output.txt", "w")
-		fp.write(chr(absearch.move[1] + 65) + str(absearch.move[0] + 1) + "\n")
-		
+		fp.write(str(N) + "\n")
+		fp.write(str(P) + "\n")
+		fp.write(str(TIME) + "\n")
+		print "HW1: ", absearch.move
+
 		matrix = absearch.matrix
 		for i in range(N):
 			fp.write("".join(matrix[i]) + "\n")
 
 		fp.close()
 
+		return absearch.move
+
+
 if __name__ == "__main__":
 
-	main()
+	print main()
