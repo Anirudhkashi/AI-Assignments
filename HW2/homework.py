@@ -21,7 +21,6 @@ class Stack():
 		self.stack.insert(0, value)
 
 
-MAX_DEPTH = 3
 MOVES = None
 IS_MOVES_SET = False
 TIME_PER_MOVE = None
@@ -44,12 +43,12 @@ def terminalTest(state):
 
 	s = list(s)
 	if len(s) == 1 and s[0] == '*':
-		return True, 0
+		return True
 	if state.depth == MAX_DEPTH:
-		return True, len(s)
-	# if IS_MOVES_SET and time.time() - start_time > TIME_PER_MOVE:
-	# 	return True, 0
-	return False, 0
+		return True
+	if IS_MOVES_SET and time.time() - start_time > TIME_PER_MOVE:
+		return True
+	return False
 
 
 def getNewMatrix(matrix):
@@ -141,8 +140,8 @@ def actions(state, flag):
 	actions_list = []
 	matrix = state.matrix
 	done_list = []
-	for i in range(N):
-		for j in range(N):
+	for i in range(N-1, -1, -1):
+		for j in range(N-1, -1, -1):
 			if matrix[i][j] != '*' and ((i, j) not in done_list):
 				new_matrix = getNewMatrix(matrix)
 				new_state = runDfs(new_matrix, i, j, state.depth + 1, state.score, flag)
@@ -153,23 +152,19 @@ def actions(state, flag):
 
 	if not IS_MOVES_SET:
 		MOVES = len(actions_list)
+		print MOVES
 		IS_MOVES_SET = True
 		TIME_PER_MOVE = (2.0 * float(TIME)) / float(MOVES)
-		print TIME_PER_MOVE
+		set_max_depth(init=0)
+		print MAX_DEPTH
 
 	return actions_list
 
 
-def utility(state, num_remaining):
+def utility(state):
 	value = state.value
 	score = state.score
-	num_remaining = num_remaining ** 2
-
-	if num_remaining == 0:
-		state.value = float(score)
-	else:
-		state.value = float(score)/num_remaining
-
+	state.value = float(score)
 	return state
 
 def alphaBetaSearch(state):
@@ -179,9 +174,8 @@ def alphaBetaSearch(state):
 
 def maxValue(state, alpha, beta):
 
-	b, num = terminalTest(state)
-	if b:
-		s = utility(state, num)
+	if terminalTest(state):
+		s = utility(state)
 		return s, s.move
 
 	v = -99999999
@@ -203,9 +197,8 @@ def maxValue(state, alpha, beta):
 
 def minValue(state, alpha, beta):
 
-	b, num = terminalTest(state)
-	if b:
-		s = utility(state, num)
+	if terminalTest(state):
+		s = utility(state)
 		return s, s.move
 
 	v = 99999999
@@ -225,11 +218,40 @@ def minValue(state, alpha, beta):
 		beta = min(beta, v)
 	return state, move
 
+def set_max_depth(init=1):
+
+	global MAX_DEPTH
+	global N
+
+	if init == 1:
+		if N < 8:
+			MAX_DEPTH = 5
+		elif N >= 8 and N <= 13:
+			MAX_DEPTH = 4
+		else:
+			MAX_DEPTH = 3
+
+	if init == 0 and N > 13:
+		if IS_MOVES_SET and MOVES > 40:
+			MAX_DEPTH = 3
+		elif MOVES <= 40 and MOVES > 20:
+			MAX_DEPTH = 4
+		else:
+			MAX_DEPTH = 5
+
 def main():
 
 	global N
 	global start_time
 	global TIME
+	global count
+	global MOVES
+	global IS_MOVES_SET
+	global TIME_PER_MOVE
+
+	MOVES = None
+	IS_MOVES_SET = False
+	TIME_PER_MOVE = None
 
 	start_time = time.time()
 
@@ -239,6 +261,7 @@ def main():
 		N = int(inp[0]) # N x N matrix
 		P = int(inp[1]) # Number of kinds of fruits
 		TIME = float(inp[2]) # Time remaining to make a move
+		set_max_depth(init=1)
 
 		matrix = []
 		m = inp[3:]
@@ -251,8 +274,6 @@ def main():
 				tmp.append(m[i][j])
 			matrix.append(tmp)
 
-		print numpy.array(matrix)
-
 		init_matrix = copy.deepcopy(matrix)
 		state = State()
 		state.value = 0
@@ -262,6 +283,18 @@ def main():
 		state.move = None
 
 		absearch = alphaBetaSearch(state)
+
+		if absearch.move is None:
+			flag = 0
+			for i in range(N-1, -1, -1):
+				for j in range(N-1, -1, -1):
+					if init_matrix[i][j] != '*':
+						flag = 1
+						absearch.move = (i, j)
+						break
+				if flag == 1:
+					break
+
 		temp = runDfs(init_matrix, absearch.move[0], absearch.move[1], 0, 0, 0)
 		absearch.matrix = temp.matrix
 		absearch.score = temp.value
