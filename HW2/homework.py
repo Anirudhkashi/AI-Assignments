@@ -23,6 +23,7 @@ class Stack():
 MOVES = None
 IS_MOVES_SET = False
 TIME_PER_MOVE = None
+TIME_EXCEEDED = False
 
 class State():
 	def __init__(self):
@@ -35,6 +36,7 @@ class State():
 
 def terminalTest(state):
 
+	global TIME_EXCEEDED
 	matrix = state.matrix
 	s = set()
 	for row in matrix:
@@ -46,6 +48,7 @@ def terminalTest(state):
 	if state.depth == MAX_DEPTH:
 		return True
 	if IS_MOVES_SET and time.time() - start_time > TIME_PER_MOVE:
+		TIME_EXCEEDED = True
 		return True
 	return False
 
@@ -164,10 +167,16 @@ def actions(state, flag):
 	return actions_list
 
 
-def utility(state):
-	value = state.value
-	score = state.score
-	state.value = float(score)
+def utility(state, fn):
+
+	if TIME_EXCEEDED:
+		if fn == "min":
+			state.value = float(999999999)
+		else:
+			state.value = float(-999999999)
+	else:
+		score = state.score
+		state.value = float(score)
 	return state
 
 def alphaBetaSearch(state):
@@ -178,7 +187,7 @@ def alphaBetaSearch(state):
 def maxValue(state, alpha, beta):
 
 	if terminalTest(state):
-		s = utility(state)
+		s = utility(state, "max")
 		return s, s.move
 
 	v = -99999999
@@ -201,7 +210,7 @@ def maxValue(state, alpha, beta):
 def minValue(state, alpha, beta):
 
 	if terminalTest(state):
-		s = utility(state)
+		s = utility(state, "min")
 		return s, s.move
 
 	v = 99999999
@@ -251,10 +260,12 @@ def main():
 	global MOVES
 	global IS_MOVES_SET
 	global TIME_PER_MOVE
+	global TIME_EXCEEDED
 
 	MOVES = None
 	IS_MOVES_SET = False
 	TIME_PER_MOVE = None
+	TIME_EXCEEDED = False
 
 	start_time = time.time()
 
