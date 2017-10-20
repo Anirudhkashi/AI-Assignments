@@ -1,7 +1,9 @@
 import code
-import main1
+import pruning_v
 import random
 import numpy
+import time
+import compete_Anish
 
 player1_score = 0
 player2_score = 0
@@ -119,11 +121,15 @@ def runDfs(matrix, i, j, p):
     matrix = gravity(matrix)
     return score, matrix
 
-def writeToFile():
+def writeToFile(player):
     with open("input.txt", "w") as f:
         f.write(str(N) + "\n")
         f.write(str(P) + "\n")
-        f.write(str(TIME) + "\n")
+
+        if player == 1:
+            f.write(str(PLAYER_2_TIME) + "\n")
+        else:
+            f.write(str(PLAYER_1_TIME) + "\n")
 
         for i in range(N):
             f.write("".join(matrix[i]) + "\n")
@@ -147,14 +153,30 @@ def writeToFile():
 #     f.write("300.0\n")
 #     f.write(s)
 
+PLAYER_1_TIME = TIME
+PLAYER_2_TIME = TIME
 
 while True:
 
+
+
     print "Calling Player2 code......"
-    x, y = main1.main()
+    start = time.time()
+    x, y = code.main()
+    time_taken = time.time() - start
     print x, y
     score, matrix = runDfs(matrix, x, y, "PLAYER2")
-    writeToFile()
+    PLAYER_2_TIME -= time_taken
+
+    if PLAYER_1_TIME < 0:
+        print "Player 1 loses!! Time exceeded!"
+        print "player1 total score: " + str(player1_score)
+        print "player2's total score: " + str(player2_score)
+        print "Player 1 time remaining: " + str(PLAYER_1_TIME)
+        print "Player 2 time remaining: " + str(PLAYER_2_TIME)
+        exit()
+
+    writeToFile(2)
     player2_score += score
     print "player2's total score: " + str(player2_score)
     checkMove(matrix)
@@ -163,10 +185,24 @@ while True:
     if movePossible == 1:
         break
 
+
+
     print "Calling Player1 code......."
-    x, y = code.main()
+    start = time.time()
+    x, y = compete_Anish.main()
+    time_taken = time.time() - start
     score, matrix = runDfs(matrix, x, y, "PLAYER1")
-    writeToFile()
+    PLAYER_1_TIME -= time_taken
+
+    if PLAYER_1_TIME < 0:
+        print "Player 1 loses!! Time exceeded!"
+        print "player1 total score: " + str(player1_score)
+        print "player2's total score: " + str(player2_score)
+        print "Player 1 time remaining: " + str(PLAYER_1_TIME)
+        print "Player 2 time remaining: " + str(PLAYER_2_TIME)
+        exit()
+
+    writeToFile(1)
     player1_score += score
     print "player1 total score: " + str(player1_score)
     checkMove(matrix)
@@ -175,21 +211,29 @@ while True:
     if movePossible == 1:
         break
 
+    
+   
 
 if player1_score > player2_score:
     print "Player1 WINS!!"
     print "player1 total score: " + str(player1_score)
     print "player2's total score: " + str(player2_score)
+    print "Player 1 time remaining: " + str(PLAYER_1_TIME)
+    print "Player 2 time remaining: " + str(PLAYER_2_TIME)
 
 elif player2_score > player1_score:
     print "Player2 WINS!!"
     print "player1 total score: " + str(player1_score)
     print "player2 total score: " + str(player2_score)
+    print "Player 1 time remaining: " + str(PLAYER_1_TIME)
+    print "Player 2 time remaining: " + str(PLAYER_2_TIME)
 
 else:
     print "DRAW!"
     print "player1 total score: " + str(player1_score)
     print "player2 total score: " + str(player2_score)
+    print "Player 1 time remaining: " + str(PLAYER_1_TIME)
+    print "Player 2 time remaining: " + str(PLAYER_2_TIME)
 
     # fp = open("input_temp.txt", "r")
     # fp2 = open("input.txt", "w")
