@@ -12,12 +12,14 @@ def is_variable(val):
 		return True
 	return False
 
+
 def get_opposite_predicate(predicate):
 	if has_not(predicate):
 		predicate = predicate.replace("~", "")
 	else:
 		predicate = "~"+predicate
 	return predicate
+
 
 def variables_compatible(kb_variables, query_variables):
 	kb_variable_substitutions = {}
@@ -41,6 +43,8 @@ def variables_compatible(kb_variables, query_variables):
 		else:
 			if kb_variables[i] not in kb_variable_substitutions.keys():
 				kb_variable_substitutions[kb_variables[i]] = query_variables[i]
+			# if kb_variables[i] != query_variables[i]:
+			# 	return False, kb_variable_substitutions, query_variable_substitutions
 
 	return True, kb_variable_substitutions, query_variable_substitutions
 
@@ -110,6 +114,7 @@ class KnowledgeBase:
 			if query_variables_len in self.kb[query_predicate_opposite]:
 				all_sentence_list = copy.deepcopy(self.kb[query_predicate_opposite][query_variables_len])
 				for sentence_list in all_sentence_list:
+					query_variables = query[1].split(",")
 					result, kb_substitutions, query_substitutions = variables_compatible(
 						sentence_list[0][1].split(","), query_variables)
 					if not result:
@@ -203,12 +208,15 @@ def main():
 		kb.tell(t)
 		i += 1
 
-	for query in queries:
-		t = parser.parse(query, 10001)
-		for i in range(len(t)):
-			t[i] = (get_opposite_predicate(t[i][0]), t[i][1])
-		result = kb.ask(t)
-		print result
+	with open("output.txt", "w") as f:
+		for query in queries:
+			t = parser.parse(query, 10001)
+			for i in range(len(t)):
+				t[i] = (get_opposite_predicate(t[i][0]), t[i][1])
+			result = kb.ask(t)
+			print result
+			f.write(str(result) + "\n")
+
 
 
 if __name__ == "__main__":
