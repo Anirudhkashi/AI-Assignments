@@ -217,7 +217,7 @@ def main():
 				t[i] = (get_opposite_predicate(t[i][0]), t[i][1])
 			result = kb.ask(t)
 			print result
-			f.write(str(result) + "\n")
+			f.write(str(result).upper() + "\n")
 
 
 
