@@ -132,6 +132,8 @@ class KnowledgeBase:
 
 						if final_result:
 							return True
+						else:
+							queries = []
 
 			else:
 				return False
