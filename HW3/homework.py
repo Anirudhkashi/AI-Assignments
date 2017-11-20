@@ -69,7 +69,7 @@ class KnowledgeBase:
 
 	def ask(self, queries):
 		done_queries = []
-		return self.resolution(queries, done_queries, False)
+		return self.resolution(queries, done_queries, False, 0)
 
 	def perform_substitutions(self, kb_substitutions,
 							query_substitutions, queries, query_variables, sentence_list):
@@ -94,15 +94,57 @@ class KnowledgeBase:
 
 		return queries, query_variables, sentence_list
 
-	def resolution(self, queries, done_queries, final_result):
+	def simplify_queries(self, queries):
+
+		new_queries = []
+		skip_index = []
+
+		substitutions = {}
+
+		predicates = []
+		for i in range(len(queries)):
+			predicates.append(queries[i][0])
+
+		for i in range(len(queries)):
+			if i in skip_index:
+				continue
+			query_opposite_predicate = get_opposite_predicate(queries[i][0])
+			if query_opposite_predicate in predicates:
+				index = predicates.index(query_opposite_predicate)
+				result, kb_substitutions, query_substitutions = variables_compatible(
+					queries[i][1].split(","), queries[index][1].split(","))
+				substitutions.update(kb_substitutions)
+				substitutions.update(query_substitutions)
+				if result:
+					skip_index.append(index)
+			else:
+				new_queries.append(queries[i])
+
+		for i in range(len(new_queries)):
+			tmp = []
+			for var in new_queries[i][1].split(","):
+				if var in substitutions:
+					var = substitutions[var]
+				tmp.append(var)
+			new_queries[i] = (new_queries[i][0], ",".join(tmp))
+
+		return new_queries
+
+	def resolution(self, queries, done_queries, final_result, loop_count):
+
+		# Remove contradicting queries
+		queries = self.simplify_queries(queries)
 
 		if len(queries) == 0:
 			return True
 
 		query = queries[0]
 		if query in done_queries:
-			del(queries[0])
-			return False
+			if loop_count > 20:
+				del(queries[0])
+				return False
+			else:
+				loop_count += 1
 
 		done_queries.append(query)
 		del(queries[0])
@@ -128,7 +170,7 @@ class KnowledgeBase:
 							return False
 						sentence_list.remove(to_remove)
 						queries.extend(x for x in sentence_list if x not in queries)
-						final_result = final_result or self.resolution(queries, done_queries, final_result)
+						final_result = final_result or self.resolution(queries, done_queries, final_result, loop_count)
 
 						if final_result:
 							return True
